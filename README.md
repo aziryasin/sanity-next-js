@@ -1,6 +1,6 @@
 # Sanity and Next.js
 
-This is a [Sanity.io](https://sanity.io) and [Next.js](https://nextjs.org) project created following a Course on [Sanity Learn](https://sanity.io/learn).
+This is a [Sanity.io](https://sanity.io) and [Next.js](https://nextjs.org) project created following a Course on [Sanity Learn](https://sanity.io/learn). and to map resource tool
 
 ## Getting Started
 
