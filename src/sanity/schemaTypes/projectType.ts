@@ -1,46 +1,49 @@
-import {defineField, defineType} from 'sanity'
+import { defineField, defineType } from "sanity";
 
 export const projectType = defineType({
-  name: 'project',
-  title: 'Project',
-  type: 'document',
+  name: "project",
+  title: "Project",
+  type: "document",
   fields: [
     defineField({
-      name: 'projectId',
-      type: 'string',
+      name: "projectId",
+      type: "string",
       validation: (rule) => rule.required(),
     }),
     defineField({
-      name: 'title',
-      type: 'string',
+      name: "title",
+      type: "string",
       validation: (rule) => rule.required(),
     }),
     defineField({
-      name: 'slug',
-      type: 'slug',
-      options: {source: 'title'},
+      name: "slug",
+      type: "slug",
+      options: { source: "title" },
       validation: (rule) => rule.required(),
     }),
     defineField({
-      name: 'client',
-      type: 'reference',
-      to: [{type: 'client'}],
-      description: 'Select the client for this project',
+      name: "client",
+      type: "reference",
+      to: [{ type: "client" }],
+      description: "Select the client for this project",
     }),
     defineField({
-      name: 'startedAt',
-      type: 'datetime',
+      name: "startedAt",
+      type: "datetime",
       initialValue: () => new Date().toISOString(),
       validation: (rule) => rule.required(),
     }),
     defineField({
-      name: 'image',
-      type: 'image',
+      name: "image",
+      type: "image",
+      options: {
+        hotspot: true,
+      },
     }),
     defineField({
-      name: 'description',
-      type: 'array',
-      of: [{type: 'block'}],
+      name: "description",
+      type: "array",
+      of: [{ type: "block" }],
     }),
   ],
-})
+});
