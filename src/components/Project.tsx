@@ -20,7 +20,7 @@ export async function Project(props: NonNullable<PROJECT_QUERYResult>) {
   );
   return (
     <main className="container mx-auto min-h-screen max-w-3xl p-8 flex flex-col gap-4">
-      {imageConfigDefault && (
+      {imageConfigDefault && image && (
         <Image
           src={urlFor(image).width(200).height(200).url()}
           alt={title ?? ""}
@@ -43,13 +43,19 @@ export async function Project(props: NonNullable<PROJECT_QUERYResult>) {
         {Array.isArray(description) && <PortableText value={description} />}
         <br />
         <h2>Assigned Employees ({assignedEmployees.length}):</h2>
-        {assignedEmployees.map((employee) => (
-          <Link href={`/employees/${employee.slug.current}`} key={employee._id}>
-            <h2 className="text-base font-normal">
-              {employee.name} ({employee.designation})
-            </h2>
-          </Link>
-        ))}
+        {assignedEmployees.map(
+          (employee) =>
+            employee.slug && (
+              <Link
+                href={`/employees/${employee.slug.current}`}
+                key={employee._id}
+              >
+                <h2 className="text-base font-normal">
+                  {employee.name} ({employee.designation})
+                </h2>
+              </Link>
+            )
+        )}
       </div>
     </main>
   );

@@ -3,12 +3,12 @@ import { PROJECT_QUERY } from "@/sanity/lib/queries";
 import { Project } from "@/components/Project";
 import { notFound } from "next/navigation";
 
-type PostIndexProps = { params: { slug: string } };
+type ProjectIndexProps = Promise<{ params: { slug: string } }>;
 
 const options = { next: { revalidate: 60 } };
 
-export default async function Page({ params }: PostIndexProps) {
-  const project = await client.fetch(PROJECT_QUERY, params, options);
+export default async function Page(props: { params: ProjectIndexProps }) {
+  const project = await client.fetch(PROJECT_QUERY, props.params, options);
 
   if (!project) {
     notFound();

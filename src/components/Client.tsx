@@ -1,9 +1,9 @@
-import { PROJECTS_QUERYResult } from "@/sanity/types";
+import { PROJECT_QUERYResult } from "@/sanity/types";
 import { urlFor } from "@/sanity/lib/image";
 import Image from "next/image";
 
 type ClientProps = {
-  client: NonNullable<PROJECTS_QUERYResult>["client"];
+  client: NonNullable<PROJECT_QUERYResult>["client"];
 };
 
 export function Client({ client }: ClientProps) {
