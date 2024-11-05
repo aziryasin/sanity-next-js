@@ -96,9 +96,9 @@ export type PageContent = {
   }>;
 };
 
-export type Header = {
+export type HeaderItem = {
   _id: string;
-  _type: "header";
+  _type: "headerItem";
   _createdAt: string;
   _updatedAt: string;
   _rev: string;
@@ -125,69 +125,6 @@ export type Expertise = {
   _rev: string;
   expertiseId?: string;
   title?: string;
-  slug?: Slug;
-  description?: string;
-  image?: {
-    asset?: {
-      _ref: string;
-      _type: "reference";
-      _weak?: boolean;
-      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-    };
-    hotspot?: SanityImageHotspot;
-    crop?: SanityImageCrop;
-    _type: "image";
-  };
-};
-
-export type Employee = {
-  _id: string;
-  _type: "employee";
-  _createdAt: string;
-  _updatedAt: string;
-  _rev: string;
-  employeeId?: string;
-  name?: string;
-  slug?: Slug;
-  department?: {
-    _ref: string;
-    _type: "reference";
-    _weak?: boolean;
-    [internalGroqTypeReferenceTo]?: "department";
-  };
-  skills?: Array<{
-    _key: string;
-  } & ExpertiseLevel>;
-  assignedProjects?: Array<{
-    _ref: string;
-    _type: "reference";
-    _weak?: boolean;
-    _key: string;
-    [internalGroqTypeReferenceTo]?: "project";
-  }>;
-  joinedAt?: string;
-  designation?: string;
-  image?: {
-    asset?: {
-      _ref: string;
-      _type: "reference";
-      _weak?: boolean;
-      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-    };
-    hotspot?: SanityImageHotspot;
-    crop?: SanityImageCrop;
-    _type: "image";
-  };
-};
-
-export type Department = {
-  _id: string;
-  _type: "department";
-  _createdAt: string;
-  _updatedAt: string;
-  _rev: string;
-  departmentId?: string;
-  name?: string;
   slug?: Slug;
   description?: string;
   image?: {
@@ -286,7 +223,7 @@ export type Post = {
     _ref: string;
     _type: "reference";
     _weak?: boolean;
-    [internalGroqTypeReferenceTo]?: "author";
+    [internalGroqTypeReferenceTo]?: "employee";
   };
   mainImage?: {
     asset?: {
@@ -340,14 +277,33 @@ export type Post = {
   }>;
 };
 
-export type Author = {
+export type Employee = {
   _id: string;
-  _type: "author";
+  _type: "employee";
   _createdAt: string;
   _updatedAt: string;
   _rev: string;
+  employeeId?: string;
   name?: string;
   slug?: Slug;
+  department?: {
+    _ref: string;
+    _type: "reference";
+    _weak?: boolean;
+    [internalGroqTypeReferenceTo]?: "department";
+  };
+  skills?: Array<{
+    _key: string;
+  } & ExpertiseLevel>;
+  assignedProjects?: Array<{
+    _ref: string;
+    _type: "reference";
+    _weak?: boolean;
+    _key: string;
+    [internalGroqTypeReferenceTo]?: "project";
+  }>;
+  joinedAt?: string;
+  designation?: string;
   image?: {
     asset?: {
       _ref: string;
@@ -359,24 +315,29 @@ export type Author = {
     crop?: SanityImageCrop;
     _type: "image";
   };
-  bio?: Array<{
-    children?: Array<{
-      marks?: Array<string>;
-      text?: string;
-      _type: "span";
-      _key: string;
-    }>;
-    style?: "normal";
-    listItem?: never;
-    markDefs?: Array<{
-      href?: string;
-      _type: "link";
-      _key: string;
-    }>;
-    level?: number;
-    _type: "block";
-    _key: string;
-  }>;
+};
+
+export type Department = {
+  _id: string;
+  _type: "department";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  departmentId?: string;
+  name?: string;
+  slug?: Slug;
+  description?: string;
+  image?: {
+    asset?: {
+      _ref: string;
+      _type: "reference";
+      _weak?: boolean;
+      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+    };
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    _type: "image";
+  };
 };
 
 export type Category = {
@@ -484,19 +445,87 @@ export type SanityImageMetadata = {
   isOpaque?: boolean;
 };
 
-export type AllSanitySchemaTypes = SanityImagePaletteSwatch | SanityImagePalette | SanityImageDimensions | SanityFileAsset | Geopoint | PageContent | Header | ExpertiseLevel | Expertise | Employee | Department | Project | Client | Post | Author | Category | Slug | BlockContent | SanityImageCrop | SanityImageHotspot | SanityImageAsset | SanityAssetSourceData | SanityImageMetadata;
+export type AllSanitySchemaTypes = SanityImagePaletteSwatch | SanityImagePalette | SanityImageDimensions | SanityFileAsset | Geopoint | PageContent | HeaderItem | ExpertiseLevel | Expertise | Project | Client | Post | Employee | Department | Category | Slug | BlockContent | SanityImageCrop | SanityImageHotspot | SanityImageAsset | SanityAssetSourceData | SanityImageMetadata;
 export declare const internalGroqTypeReferenceTo: unique symbol;
 // Source: ./src/sanity/lib/queries.ts
 // Variable: POSTS_QUERY
-// Query: *[_type == "post" && defined(slug.current)][0...12]{  _id, title, slug}
+// Query: *[_type == "post" && defined(slug.current)]|order(publishedAt desc)[0...12]{  _id,  title,  slug,  body,  mainImage,  publishedAt,  "categories": coalesce(    categories[]->{      _id,      slug,      title    },    []  ),  author->{    name,    image  }}
 export type POSTS_QUERYResult = Array<{
   _id: string;
   title: string | null;
   slug: Slug | null;
+  body: Array<{
+    children?: Array<{
+      marks?: Array<string>;
+      text?: string;
+      _type: "span";
+      _key: string;
+    }>;
+    style?: "blockquote" | "h1" | "h2" | "h3" | "h4" | "normal";
+    listItem?: "bullet";
+    markDefs?: Array<{
+      href?: string;
+      _type: "link";
+      _key: string;
+    }>;
+    level?: number;
+    _type: "block";
+    _key: string;
+  } | {
+    asset?: {
+      _ref: string;
+      _type: "reference";
+      _weak?: boolean;
+      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+    };
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    alt?: string;
+    _type: "image";
+    _key: string;
+  }> | null;
+  mainImage: {
+    asset?: {
+      _ref: string;
+      _type: "reference";
+      _weak?: boolean;
+      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+    };
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    alt?: string;
+    _type: "image";
+  } | null;
+  publishedAt: string | null;
+  categories: Array<{
+    _id: string;
+    slug: Slug | null;
+    title: string | null;
+  }> | Array<never>;
+  author: {
+    name: string | null;
+    image: {
+      asset?: {
+        _ref: string;
+        _type: "reference";
+        _weak?: boolean;
+        [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+      };
+      hotspot?: SanityImageHotspot;
+      crop?: SanityImageCrop;
+      _type: "image";
+    } | null;
+  } | null;
+}>;
+// Variable: POSTS_SLUGS_QUERY
+// Query: *[_type == "post" && defined(slug.current)]{  "slug": slug.current}
+export type POSTS_SLUGS_QUERYResult = Array<{
+  slug: string | null;
 }>;
 // Variable: POST_QUERY
-// Query: *[_type == "post" && slug.current == $slug][0]{  title, body, mainImage}
+// Query: *[_type == "post" && slug.current == $slug][0]{  _id,  title,  body,  mainImage,  publishedAt,  "categories": coalesce(    categories[]->{      _id,      slug,      title    },    []  ),  author->{    name,    image  }}
 export type POST_QUERYResult = {
+  _id: string;
   title: string | null;
   body: Array<{
     children?: Array<{
@@ -540,13 +569,236 @@ export type POST_QUERYResult = {
     alt?: string;
     _type: "image";
   } | null;
+  publishedAt: string | null;
+  categories: Array<{
+    _id: string;
+    slug: Slug | null;
+    title: string | null;
+  }> | Array<never>;
+  author: {
+    name: string | null;
+    image: {
+      asset?: {
+        _ref: string;
+        _type: "reference";
+        _weak?: boolean;
+        [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+      };
+      hotspot?: SanityImageHotspot;
+      crop?: SanityImageCrop;
+      _type: "image";
+    } | null;
+  } | null;
+} | null;
+// Variable: HEADER_CONTENT_QUERY
+// Query: *[_type == "headerItem"]| order(label desc){ path,label}
+export type HEADER_CONTENT_QUERYResult = Array<{
+  path: string | null;
+  label: string | null;
+}>;
+// Variable: PROJECTS_QUERY
+// Query: *[_type == "project" && defined(slug.current)]|order(startedAt desc){  _id,  title,  projectId,  slug,  description,  image,  startedAt,  client->}
+export type PROJECTS_QUERYResult = Array<{
+  _id: string;
+  title: string | null;
+  projectId: string | null;
+  slug: Slug | null;
+  description: Array<{
+    children?: Array<{
+      marks?: Array<string>;
+      text?: string;
+      _type: "span";
+      _key: string;
+    }>;
+    style?: "blockquote" | "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "normal";
+    listItem?: "bullet" | "number";
+    markDefs?: Array<{
+      href?: string;
+      _type: "link";
+      _key: string;
+    }>;
+    level?: number;
+    _type: "block";
+    _key: string;
+  }> | null;
+  image: {
+    asset?: {
+      _ref: string;
+      _type: "reference";
+      _weak?: boolean;
+      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+    };
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    _type: "image";
+  } | null;
+  startedAt: string | null;
+  client: {
+    _id: string;
+    _type: "client";
+    _createdAt: string;
+    _updatedAt: string;
+    _rev: string;
+    clientId?: string;
+    name?: string;
+    slug?: Slug;
+    joinedAt?: string;
+    country?: string;
+    image?: {
+      asset?: {
+        _ref: string;
+        _type: "reference";
+        _weak?: boolean;
+        [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+      };
+      hotspot?: SanityImageHotspot;
+      crop?: SanityImageCrop;
+      _type: "image";
+    };
+  } | null;
+}>;
+// Variable: PROJECT_QUERY
+// Query: *[_type == "project" && slug.current == $slug][0]{  _id,slug,image, title,projectId,client->,startedAt,description}
+export type PROJECT_QUERYResult = {
+  _id: string;
+  slug: Slug | null;
+  image: {
+    asset?: {
+      _ref: string;
+      _type: "reference";
+      _weak?: boolean;
+      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+    };
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    _type: "image";
+  } | null;
+  title: string | null;
+  projectId: string | null;
+  client: {
+    _id: string;
+    _type: "client";
+    _createdAt: string;
+    _updatedAt: string;
+    _rev: string;
+    clientId?: string;
+    name?: string;
+    slug?: Slug;
+    joinedAt?: string;
+    country?: string;
+    image?: {
+      asset?: {
+        _ref: string;
+        _type: "reference";
+        _weak?: boolean;
+        [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+      };
+      hotspot?: SanityImageHotspot;
+      crop?: SanityImageCrop;
+      _type: "image";
+    };
+  } | null;
+  startedAt: string | null;
+  description: Array<{
+    children?: Array<{
+      marks?: Array<string>;
+      text?: string;
+      _type: "span";
+      _key: string;
+    }>;
+    style?: "blockquote" | "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "normal";
+    listItem?: "bullet" | "number";
+    markDefs?: Array<{
+      href?: string;
+      _type: "link";
+      _key: string;
+    }>;
+    level?: number;
+    _type: "block";
+    _key: string;
+  }> | null;
+} | null;
+// Variable: ASSIGNED_EMPLOYEES_QUERY
+// Query: *[_type == "employee" && references($projectId)]{ _id,slug, name,designation,joinedAt,"projects":assignedProjects[]->_id,"skills":skills[]{"stack":expertise->title,expertiseLevel}}
+export type ASSIGNED_EMPLOYEES_QUERYResult = Array<{
+  _id: string;
+  slug: Slug | null;
+  name: string | null;
+  designation: string | null;
+  joinedAt: string | null;
+  projects: Array<string> | null;
+  skills: Array<{
+    stack: string | null;
+    expertiseLevel: number | null;
+  }> | null;
+}>;
+// Variable: EMPLOYEES_QUERY
+// Query: *[_type == "employee" ]{ _id,slug, name,designation,joinedAt,"projects":assignedProjects[]->_id,image,"skills":skills[]{"stack":expertise->title,expertiseLevel}}
+export type EMPLOYEES_QUERYResult = Array<{
+  _id: string;
+  slug: Slug | null;
+  name: string | null;
+  designation: string | null;
+  joinedAt: string | null;
+  projects: Array<string> | null;
+  image: {
+    asset?: {
+      _ref: string;
+      _type: "reference";
+      _weak?: boolean;
+      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+    };
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    _type: "image";
+  } | null;
+  skills: Array<{
+    stack: string | null;
+    expertiseLevel: number | null;
+  }> | null;
+}>;
+// Variable: EMPLOYEE_QUERY
+// Query: *[_type == "employee" && slug.current == $slug][0]{ _id,slug,image, name,designation,"department":department->name,joinedAt,"projects":assignedProjects[]->{title,slug},"skills":skills[]{"stack":expertise->title,expertiseLevel}}
+export type EMPLOYEE_QUERYResult = {
+  _id: string;
+  slug: Slug | null;
+  image: {
+    asset?: {
+      _ref: string;
+      _type: "reference";
+      _weak?: boolean;
+      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+    };
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    _type: "image";
+  } | null;
+  name: string | null;
+  designation: string | null;
+  department: string | null;
+  joinedAt: string | null;
+  projects: Array<{
+    title: string | null;
+    slug: Slug | null;
+  }> | null;
+  skills: Array<{
+    stack: string | null;
+    expertiseLevel: number | null;
+  }> | null;
 } | null;
 
 // Query TypeMap
 import "@sanity/client";
 declare module "@sanity/client" {
   interface SanityQueries {
-    "*[_type == \"post\" && defined(slug.current)][0...12]{\n  _id, title, slug\n}": POSTS_QUERYResult;
-    "*[_type == \"post\" && slug.current == $slug][0]{\n  title, body, mainImage\n}": POST_QUERYResult;
+    "*[_type == \"post\" && defined(slug.current)]|order(publishedAt desc)[0...12]{\n  _id,\n  title,\n  slug,\n  body,\n  mainImage,\n  publishedAt,\n  \"categories\": coalesce(\n    categories[]->{\n      _id,\n      slug,\n      title\n    },\n    []\n  ),\n  author->{\n    name,\n    image\n  }\n}": POSTS_QUERYResult;
+    "*[_type == \"post\" && defined(slug.current)]{\n  \"slug\": slug.current\n}": POSTS_SLUGS_QUERYResult;
+    "*[_type == \"post\" && slug.current == $slug][0]{\n  _id,\n  title,\n  body,\n  mainImage,\n  publishedAt,\n  \"categories\": coalesce(\n    categories[]->{\n      _id,\n      slug,\n      title\n    },\n    []\n  ),\n  author->{\n    name,\n    image\n  }\n}": POST_QUERYResult;
+    "\n*[_type == \"headerItem\"]| order(label desc){ path,label}": HEADER_CONTENT_QUERYResult;
+    "*[_type == \"project\" && defined(slug.current)]|order(startedAt desc){\n  _id,\n  title,\n  projectId,\n  slug,\n  description,\n  image,\n  startedAt,\n  client->\n}": PROJECTS_QUERYResult;
+    "*[_type == \"project\" && slug.current == $slug][0]{\n  _id,slug,image, title,projectId,client->,startedAt,description\n}": PROJECT_QUERYResult;
+    "\n*[_type == \"employee\" && references($projectId)]{ _id,slug, name,designation,joinedAt,\"projects\":assignedProjects[]->_id,\"skills\":skills[]{\"stack\":expertise->title,expertiseLevel}}": ASSIGNED_EMPLOYEES_QUERYResult;
+    "\n*[_type == \"employee\" ]{ _id,slug, name,designation,joinedAt,\"projects\":assignedProjects[]->_id,image,\"skills\":skills[]{\"stack\":expertise->title,expertiseLevel}}": EMPLOYEES_QUERYResult;
+    "\n*[_type == \"employee\" && slug.current == $slug][0]{ _id,slug,image, name,designation,\"department\":department->name,joinedAt,\"projects\":assignedProjects[]->{title,slug},\"skills\":skills[]{\"stack\":expertise->title,expertiseLevel}}": EMPLOYEE_QUERYResult;
   }
 }
