@@ -1,11 +1,10 @@
 import { EMPLOYEES_QUERYResult } from "@/sanity/types";
-import { PublishedAt } from "@/components/PublishedAt";
 import { urlFor } from "@/sanity/lib/image";
 import Image from "next/image";
 import Link from "next/link";
 
 export function EmployeeCard(props: EMPLOYEES_QUERYResult[0]) {
-  const { name, joinedAt, image, designation } = props;
+  const { name, image, designation } = props;
 
   return (
     <Link className="group" href={`/employees/${props.slug!.current}`}>
